@@ -1,0 +1,62 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to rollback to'
+        required: true
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+        - staging
+        - production
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Copy docker-compose.prod.yaml to EC2
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        source: "docker-compose.prod.yaml"
+        target: "~/app"
+
+    - name: Deploy previous tag to EC2 via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd ~/app
+          
+          # Pull the specific tag
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mern-backend:${{ github.event.inputs.tag }}
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mern-frontend:${{ github.event.inputs.tag }}
+          
+          # Tag them as latest to let docker-compose use them
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/mern-backend:${{ github.event.inputs.tag }} ${{ secrets.DOCKERHUB_USERNAME }}/mern-backend:latest
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/mern-frontend:${{ github.event.inputs.tag }} ${{ secrets.DOCKERHUB_USERNAME }}/mern-frontend:latest
+          
+          # Restart services using production config
+          DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose -f docker-compose.prod.yaml up -d --remove-orphans
+
+    - name: Notify Slack on Rollback
+      uses: slackapi/slack-github-action@v1.25.0
+      with:
+        payload: |
+          {
+            "text": "Rollback to tag ${{ github.event.inputs.tag }} initiated in ${{ github.event.inputs.environment }}."
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

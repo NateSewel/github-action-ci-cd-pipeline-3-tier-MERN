@@ -1,0 +1,50 @@
+name: CI - Lint and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          mern/frontend/package-lock.json
+          mern/backend/package-lock.json
+
+    # Frontend Linting and Testing
+    - name: Install Frontend Dependencies
+      working-directory: mern/frontend
+      run: npm ci
+
+    - name: Run Frontend Lint
+      working-directory: mern/frontend
+      run: npm run lint
+
+    # Backend Linting and Testing (Placeholder for now)
+    - name: Install Backend Dependencies
+      working-directory: mern/backend
+      run: npm ci
+
+    # Cypress Testing (Frontend)
+    # We can run cypress tests if needed, but it requires the app to be running.
+    # For now, let's just run component tests or unit tests if they existed.
+    # - name: Cypress run
+    #   uses: cypress-io/github-action@v6
+    #   with:
+    #     working-directory: mern/frontend
+    #     start: npm run dev
+    #     wait-on: 'http://localhost:5173'
+
+    - name: Backend Test Placeholder
+      run: echo "No backend tests defined. Passing by default."
