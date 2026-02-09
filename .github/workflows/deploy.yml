@@ -67,7 +67,7 @@ jobs:
         source: "docker-compose.prod.yaml"
         target: "~/app"
 
-    - name: Deploy to EC2 via SSH
+    - name: Deploy to EC2 Instance via SSH
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.EC2_HOST }}
