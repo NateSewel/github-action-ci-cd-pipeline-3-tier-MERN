@@ -7,7 +7,7 @@ This guide provides a step-by-step walkthrough to set up your AWS EC2 instance a
 Connect to your EC2 instance via SSH and run the following script to install all necessary dependencies (Docker, Docker Compose).
 
 ### Installation Script
-Copy and paste this entire block into your EC2 terminal:
+Copy and paste this entire block into your EC2 terminal:-
 
 ```bash
 # Update system packages
