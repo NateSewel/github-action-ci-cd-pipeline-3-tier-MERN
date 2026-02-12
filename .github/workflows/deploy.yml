@@ -92,22 +92,20 @@ jobs:
 
     - name: Notify Slack on Success
       if: success()
-      uses: slackapi/slack-github-action@v1.25.0
+      uses: slackapi/slack-github-action@v1.27.0
       with:
+        slack-webhook-url: ${{ secrets.SLACK_WEBHOOK }}
         payload: |
           {
             "text": "Deployment to ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }} Successful!\nCommit: ${{ github.sha }}\nURL: ${{ vars.SITE_URL }}"
           }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
     - name: Notify Slack on Failure
       if: failure()
-      uses: slackapi/slack-github-action@v1.25.0
+      uses: slackapi/slack-github-action@v1.27.0
       with:
+        slack-webhook-url: ${{ secrets.SLACK_WEBHOOK }}
         payload: |
           {
             "text": "Deployment to ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }} Failed!\nCommit: ${{ github.sha }}"
           }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

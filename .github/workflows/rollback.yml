@@ -52,11 +52,10 @@ jobs:
           DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose -f docker-compose.prod.yaml up -d --remove-orphans
 
     - name: Notify Slack on Rollback
-      uses: slackapi/slack-github-action@v1.25.0
+      uses: slackapi/slack-github-action@v1.27.0
       with:
+        slack-webhook-url: ${{ secrets.SLACK_WEBHOOK }}
         payload: |
           {
             "text": "Rollback to tag ${{ github.event.inputs.tag }} initiated in ${{ github.event.inputs.environment }}."
           }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
