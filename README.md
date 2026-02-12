@@ -26,6 +26,7 @@
 - [Performance Comparison](#performance-comparison)
 - [Troubleshooting](#troubleshooting)
 - [CI/CD Pipeline](#cicd-pipeline)
+- [EC2 Deployment Guide](./EC2_DEPLOYMENT_GUIDE.md)
 - [Stopping the Application](#stopping-the-application)
 - [Contributing](#contributing)
 - [License](#license)
