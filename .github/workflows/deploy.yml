@@ -44,6 +44,8 @@ jobs:
       with:
         context: ./mern/frontend
         push: true
+        build-args: |
+          VITE_API_URL=http://${{ secrets.EC2_HOST }}:5050
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/mern-frontend:latest
           ${{ secrets.DOCKERHUB_USERNAME }}/mern-frontend:${{ steps.vars.outputs.tag }}
